@@ -43,6 +43,12 @@ public class GameData {
         });
     }
 
+    public void reset() {
+        guesses.clear();
+        winners.clear();
+        losers.clear();
+    }
+
 
 
 }
