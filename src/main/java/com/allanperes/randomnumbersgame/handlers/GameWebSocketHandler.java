@@ -5,6 +5,7 @@ import com.allanperes.randomnumbersgame.models.User;
 import com.allanperes.randomnumbersgame.service.GameService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -22,6 +23,14 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(@NotNull WebSocketSession session, @NotNull TextMessage message) throws Exception {
         final var guess = objectMapper.readValue(message.getPayload(), GuessDto.class);
+        if (guess.bet().compareTo(BigDecimal.ONE) < 0) {
+            session.sendMessage(new TextMessage("Your bet is too low!"));
+            return;
+        }
+        if (guess.guess() < 1 || guess.guess() > 10) {
+            session.sendMessage(new TextMessage("Your guess should be between 1 and 10!"));
+            return;
+        }
         gameService.makeBet(session, guess);
     }
 
