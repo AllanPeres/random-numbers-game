@@ -1,18 +1,14 @@
 package com.allanperes.randomnumbersgame.service;
 
-import com.allanperes.randomnumbersgame.models.GuessPayload;
+import com.allanperes.randomnumbersgame.models.GameData;
+import com.allanperes.randomnumbersgame.models.GameState;
 import com.allanperes.randomnumbersgame.models.User;
-import com.allanperes.randomnumbersgame.models.WinnerPayload;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Random;
+import com.allanperes.randomnumbersgame.models.dto.GuessDto;
+import com.allanperes.randomnumbersgame.models.dto.WinningsDto;
+import com.allanperes.randomnumbersgame.utils.GameTimer;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,23 +20,14 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class GameService {
 
-    private final BigDecimal STAKE_RATIO = BigDecimal.valueOf(9.9);
-    private final Integer ROUND_TIME = 10;
-    private final Integer MIN_GUESS = 1;
-    private final Integer MAX_GUESS = 10;
-
-    // Using a hashmap here, so the user can increase
     private final ConcurrentHashMap<String, User> users = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, WebSocketSession> webSocketSessions = new ConcurrentHashMap<>();
 
-    private final AtomicBoolean isRoundRunning = new AtomicBoolean(false);
-    private final ConcurrentHashMap<String, GuessPayload> guesses = new ConcurrentHashMap<>();
+    private final RulesService rulesService;
+    private final GameTimer gameTimer;
 
-    private final List<WinnerPayload> winners = new CopyOnWriteArrayList<>();
-    private final List<String> losers = new CopyOnWriteArrayList<>();
-
-    private final AtomicInteger secondsPassed = new AtomicInteger(0);
-    private final Random random = new Random();
+    private GameState gameState = new GameState();
+    private GameData gameData = new GameData();
 
     public void addUser(User user, WebSocketSession session) {
         users.put(user.username(), user);
@@ -57,26 +44,24 @@ public class GameService {
     }
 
     public synchronized void checkIfRoundHasStartedOrStart(WebSocketSession session) {
-        if (isRoundRunning.get()) {
+        if (gameState.isRoundRunning()) {
             sendMessage(session, new TextMessage("Round already started, you have " +
-                    (ROUND_TIME - secondsPassed.get()) + " seconds to place a bet!"));
+                    gameTimer.remainingTime() + " seconds to place a bet!"));
             return;
         }
-        if (!isRoundRunning.get() && !webSocketSessions.isEmpty()) {
+        if (!gameState.isRoundRunning() && !webSocketSessions.isEmpty()) {
             startRound();
         }
     }
 
     private synchronized void startRound() {
-        if (isRoundRunning.get()) {
+        if (gameState.isRoundRunning()) {
             return;
         }
         log.info("Starting round");
-        isRoundRunning.set(true);
-        guesses.clear();
-        winners.clear();
-        losers.clear();
-        secondsPassed.set(0);
+        gameState.startRound();
+        gameState = new GameState();
+        gameTimer.resetTimer();
         for (WebSocketSession webSocketSession : webSocketSessions.values()) {
             sendMessage(webSocketSession, new TextMessage("Game started! You have 10 seconds to give your guess!"));
         }
@@ -87,9 +72,9 @@ public class GameService {
         for (int i = 0; i < 10; i++) {
             try {
                 Thread.sleep(1000);
-                secondsPassed.addAndGet(1);
+                gameTimer.increaseSecond();
                 // If game state change to not running, need to stop counting.
-                if (!isRoundRunning.get()) {
+                if (!gameState.isRoundRunning() || gameTimer.isFinished()) {
                     break;
                 }
             } catch (InterruptedException e) {
@@ -100,61 +85,49 @@ public class GameService {
     }
 
     public synchronized void finishRound() {
-        if (!isRoundRunning.get()) {
+        if (!gameState.isRoundRunning()) {
             return;
         }
         log.info("Finishing round");
-        isRoundRunning.set(false);
-        secondsPassed.set(0);
+        gameState.stopRound();
+        gameTimer.resetTimer();
         verifyGuesses();
         notifyUsers();
         startRound();
     }
 
-    public void makeBet(WebSocketSession session, GuessPayload guess) {
-        if (isRoundRunning.get()) {
+    public void makeBet(WebSocketSession session, GuessDto guess) {
+        if (gameState.isRoundRunning()) {
             final var username = session.getAttributes().get("username").toString();
 
-            guesses.computeIfAbsent(username, (e) -> {
+            gameData.addGuess(username, (e) -> {
                 log.info("User {} made a bet on {}", username, guess);
                 sendMessage(session, new TextMessage("Your guess is " + guess.guess() + " you bet " + guess.bet()));
                 return guess;
             });
-//            if (guesses.size() >= webSocketSessions.size()) {
-//                finishRound();
-//            }
         }
     }
 
     private void verifyGuesses() {
-        int winnerNumber = calculateWinnerNumber();
-        guesses.forEach((username, guess) -> {
-            if (guess.guess().equals(winnerNumber)) {
-                final var winner = new WinnerPayload(username, guess.guess(), guess.bet(), guess.bet().multiply(STAKE_RATIO));
-                winners.add(winner);
-                log.info("User {} won!", username);
-            } else {
-                losers.add(username);
-                log.info("User {} Lost!", username);
-            }
-        });
+        int winnerNumber = rulesService.calculateWinnerNumber();
+        gameData.calculateWinnersAndLosers(winnerNumber, rulesService::calculateWinnings);
     }
 
     private void notifyUsers() {
-        for (WinnerPayload winner : winners) {
+        for (WinningsDto winner : gameData.getWinners()) {
             final var session = webSocketSessions.get(winner.username());
             if (session != null) {
                 sendMessage(session, new TextMessage("You won " + winner.winnings()));
             }
         }
-        for (String username : losers) {
+        for (String username : gameData.getLosers()) {
             final var session = webSocketSessions.get(username);
             if (session != null) {
                 sendMessage(session, new TextMessage("You lost, don't be sad try one more time!"));
             }
         }
         for (WebSocketSession session : webSocketSessions.values()) {
-            final var winnerText = new TextMessage("The winners are " + winners);
+            final var winnerText = new TextMessage("The winners are " + gameData.getWinners());
             sendMessage(session, winnerText);
         }
     }
@@ -167,9 +140,6 @@ public class GameService {
         }
     }
 
-    private int calculateWinnerNumber() {
-        return random.nextInt(MAX_GUESS - MIN_GUESS + 1) + MIN_GUESS;
-    }
 
 
 }

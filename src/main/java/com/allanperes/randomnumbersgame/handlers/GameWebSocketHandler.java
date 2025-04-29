@@ -1,6 +1,6 @@
 package com.allanperes.randomnumbersgame.handlers;
 
-import com.allanperes.randomnumbersgame.models.GuessPayload;
+import com.allanperes.randomnumbersgame.models.dto.GuessDto;
 import com.allanperes.randomnumbersgame.models.User;
 import com.allanperes.randomnumbersgame.service.GameService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(@NotNull WebSocketSession session, @NotNull TextMessage message) throws Exception {
-        final var guess = objectMapper.readValue(message.getPayload(), GuessPayload.class);
+        final var guess = objectMapper.readValue(message.getPayload(), GuessDto.class);
         gameService.makeBet(session, guess);
     }
 

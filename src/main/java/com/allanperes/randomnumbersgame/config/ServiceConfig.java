@@ -1,0 +1,28 @@
+package com.allanperes.randomnumbersgame.config;
+
+import com.allanperes.randomnumbersgame.service.GameService;
+import com.allanperes.randomnumbersgame.service.RulesService;
+import com.allanperes.randomnumbersgame.utils.DefaultGameTimer;
+import com.allanperes.randomnumbersgame.utils.GameTimer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ServiceConfig {
+
+    @Bean
+    public GameService gameService() {
+        return new GameService(rulesService(), gameTimer());
+    }
+
+    @Bean
+    public GameTimer gameTimer() {
+        return new DefaultGameTimer();
+    }
+
+    @Bean
+    public RulesService rulesService() {
+        return new RulesService();
+    }
+
+}
