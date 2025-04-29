@@ -1,7 +1,7 @@
 package com.allanperes.randomnumbersgame.service;
 
-import com.allanperes.randomnumbersgame.models.GameData;
-import com.allanperes.randomnumbersgame.models.GameState;
+import com.allanperes.randomnumbersgame.utils.GameData;
+import com.allanperes.randomnumbersgame.utils.GameState;
 import com.allanperes.randomnumbersgame.models.User;
 import com.allanperes.randomnumbersgame.models.dto.GuessDto;
 import com.allanperes.randomnumbersgame.models.dto.WinningsDto;
@@ -109,8 +109,8 @@ public class GameService {
     }
 
     private void verifyGuesses() {
-        int winnerNumber = rulesService.calculateWinnerNumber();
-        gameData.calculateWinnersAndLosers(winnerNumber, rulesService::calculateWinnings);
+        rulesService.calculateWinnerNumber();
+        gameData.calculateWinnersAndLosers(rulesService::isWinner, rulesService::calculateWinnings);
     }
 
     private void notifyUsers() {

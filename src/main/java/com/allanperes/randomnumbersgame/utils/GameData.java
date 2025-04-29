@@ -1,4 +1,4 @@
-package com.allanperes.randomnumbersgame.models;
+package com.allanperes.randomnumbersgame.utils;
 
 import com.allanperes.randomnumbersgame.models.dto.GuessDto;
 import com.allanperes.randomnumbersgame.models.dto.WinningsDto;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,10 +31,10 @@ public class GameData {
         guesses.computeIfAbsent(username, mappingFunction);
     }
 
-    public void calculateWinnersAndLosers(int winnerNumber, Function<BigDecimal, BigDecimal> calculatingFunction) {
+    public void calculateWinnersAndLosers(Predicate<Integer> winningFunction, Function<BigDecimal, BigDecimal> winningsFunction) {
         guesses.forEach((username, guess) -> {
-            if (guess.guess().equals(winnerNumber)) {
-                final var winner = new WinningsDto(username, guess.guess(), guess.bet(), calculatingFunction.apply(guess.bet()));
+            if (winningFunction.test(guess.guess())) {
+                final var winner = new WinningsDto(username, guess.guess(), guess.bet(), winningsFunction.apply(guess.bet()));
                 winners.add(winner);
                 log.info("User {} won!", username);
             } else {

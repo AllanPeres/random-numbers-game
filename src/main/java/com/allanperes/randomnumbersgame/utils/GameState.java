@@ -1,7 +1,6 @@
-package com.allanperes.randomnumbersgame.models;
+package com.allanperes.randomnumbersgame.utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.Getter;
 
 public class GameState {
 
