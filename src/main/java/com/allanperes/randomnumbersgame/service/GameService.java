@@ -60,7 +60,7 @@ public class GameService {
         }
         log.info("Starting round");
         gameState.startRound();
-        gameState.reset();
+        gameData.reset();
         gameTimer.resetTimer();
         for (WebSocketSession webSocketSession : webSocketSessions.values()) {
             sendMessage(webSocketSession, new TextMessage("Game started! You have 10 seconds to give your guess!"));
