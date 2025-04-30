@@ -1,5 +1,6 @@
 package com.allanperes.randomnumbersgame.config;
 
+import com.allanperes.randomnumbersgame.config.props.RandomNumbersGameProperties;
 import com.allanperes.randomnumbersgame.service.GameService;
 import com.allanperes.randomnumbersgame.service.RulesService;
 import com.allanperes.randomnumbersgame.utils.DefaultGameTimer;
@@ -13,13 +14,13 @@ import org.springframework.context.annotation.Configuration;
 public class ServiceConfig {
 
     @Bean
-    public GameService gameService() {
-        return new GameService(rulesService(), gameTimer());
+    public GameService gameService(RandomNumbersGameProperties properties) {
+        return new GameService(rulesService(), gameTimer(properties), properties);
     }
 
     @Bean
-    public GameTimer gameTimer() {
-        return new DefaultGameTimer();
+    public GameTimer gameTimer(RandomNumbersGameProperties properties) {
+        return new DefaultGameTimer(properties);
     }
 
     @Bean

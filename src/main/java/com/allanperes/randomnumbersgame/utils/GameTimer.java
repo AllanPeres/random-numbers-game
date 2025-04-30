@@ -2,9 +2,9 @@ package com.allanperes.randomnumbersgame.utils;
 
 public interface GameTimer {
 
-    int timeElapsed();
-    int remainingTime();
+    int remainingTimeInSeconds();
     boolean isFinished();
     void resetTimer();
-    void increaseSecond();
+    void increaseTime(long waitingTimeInMs);
+    void increaseTime();
 }

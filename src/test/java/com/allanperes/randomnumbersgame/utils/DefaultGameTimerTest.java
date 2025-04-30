@@ -1,5 +1,6 @@
 package com.allanperes.randomnumbersgame.utils;
 
+import com.allanperes.randomnumbersgame.config.props.RandomNumbersGameProperties;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
@@ -13,40 +14,37 @@ public class DefaultGameTimerTest {
 
     @Test
     void when_TimeElapsed_should_ReturnCorrectValues() {
-        timer = new DefaultGameTimer();
+        timer = new DefaultGameTimer(new RandomNumbersGameProperties());
 
-        timer.increaseSecond();
-        timer.increaseSecond();
-        timer.increaseSecond();
+        timer.increaseTime();
+        timer.increaseTime();
+        timer.increaseTime();
 
-        assertEquals(3, timer.timeElapsed());
-        assertEquals(7, timer.remainingTime());
+        assertEquals(7, timer.remainingTimeInSeconds());
         assertFalse(timer.isFinished());
     }
 
     @Test
     void when_TimerIsReset_shouldReturnCorrectValues() {
-        timer = new DefaultGameTimer();
+        timer = new DefaultGameTimer(new RandomNumbersGameProperties());
 
-        timer.increaseSecond();
-        timer.increaseSecond();
-        timer.increaseSecond();
+        timer.increaseTime();
+        timer.increaseTime();
+        timer.increaseTime();
 
         timer.resetTimer();
 
-        assertEquals(0, timer.timeElapsed());
-        assertEquals(10, timer.remainingTime());
+        assertEquals(10, timer.remainingTimeInSeconds());
         assertFalse(timer.isFinished());
     }
 
     @Test
     void when_TimeElapsedIs10_shouldReturnIsFinished() {
-        timer = new DefaultGameTimer();
+        timer = new DefaultGameTimer(new RandomNumbersGameProperties());
 
-        IntStream.range(0, 10).forEach(i -> timer.increaseSecond());
+        IntStream.range(0, 10).forEach(i -> timer.increaseTime());
 
-        assertEquals(10, timer.timeElapsed());
-        assertEquals(0, timer.remainingTime());
+        assertEquals(0, timer.remainingTimeInSeconds());
         assertTrue(timer.isFinished());
     }
 }

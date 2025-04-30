@@ -1,5 +1,6 @@
 package com.allanperes.randomnumbersgame.service;
 
+import com.allanperes.randomnumbersgame.config.props.RandomNumbersGameProperties;
 import com.allanperes.randomnumbersgame.utils.GameData;
 import com.allanperes.randomnumbersgame.utils.GameState;
 import com.allanperes.randomnumbersgame.models.User;
@@ -25,6 +26,7 @@ public class GameService {
 
     private final RulesService rulesService;
     private final GameTimer gameTimer;
+    private final RandomNumbersGameProperties properties;
 
     private final GameState gameState = new GameState();
     private final GameData gameData = new GameData();
@@ -46,7 +48,7 @@ public class GameService {
     public synchronized void checkIfRoundHasStartedOrStart(WebSocketSession session) {
         if (gameState.isRoundRunning()) {
             sendMessage(session, new TextMessage("Round already started, you have " +
-                    gameTimer.remainingTime() + " seconds to place a bet!"));
+                    gameTimer.remainingTimeInSeconds() + " seconds to place a bet!"));
             return;
         }
         if (!gameState.isRoundRunning() && !webSocketSessions.isEmpty()) {
@@ -69,16 +71,13 @@ public class GameService {
     }
 
     private void runRound() {
-        for (int i = 0; i < 10; i++) {
+        final var waitingTime = properties.getGameProperties().getTimingBeforeTicking();
+        while(gameState.isRoundRunning() && !gameTimer.isFinished()) {
             try {
-                Thread.sleep(1000);
-                gameTimer.increaseSecond();
-                // If game state change to not running, need to stop counting.
-                if (!gameState.isRoundRunning() || gameTimer.isFinished()) {
-                    break;
-                }
+                Thread.sleep(waitingTime);
+                gameTimer.increaseTime(waitingTime);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e); // Throwing cause something really went wrong
             }
         }
         finishRound();
@@ -139,7 +138,4 @@ public class GameService {
             log.error(e.getMessage());
         }
     }
-
-
-
 }
