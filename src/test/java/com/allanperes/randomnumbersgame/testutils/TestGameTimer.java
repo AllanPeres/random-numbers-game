@@ -9,9 +9,13 @@ import org.springframework.stereotype.Component;
 public class TestGameTimer implements GameTimer {
 
     private final RandomNumbersGameProperties properties;
+    private long timeBeforeTicking;
+    private int tickingTimes;
 
     public TestGameTimer(RandomNumbersGameProperties properties) {
         this.properties = properties;
+        timeBeforeTicking = properties.getGameProperties().getTimingBeforeTicking();
+        tickingTimes = properties.getGameProperties().getTickingTimes();
     }
 
     private final AtomicLong msPassed = new AtomicLong(0);
@@ -38,7 +42,17 @@ public class TestGameTimer implements GameTimer {
 
     @Override
     public void increaseTime() {
-        increaseTime(properties.getGameProperties().getTimingBeforeTicking());
+        increaseTime(timeBeforeTicking);
+    }
+
+    @Override
+    public int getTicklingTimes() {
+        return tickingTimes;
+    }
+
+    @Override
+    public long getTimeBeforeTicking() {
+        return timeBeforeTicking;
     }
 
     private int timePassedInSeconds() {
@@ -46,12 +60,19 @@ public class TestGameTimer implements GameTimer {
     }
 
     private int timeLimitInSeconds() {
-        var tickingTimeInSeconds = (int)(properties.getGameProperties().getTimingBeforeTicking() / 1000);
+        var tickingTimeInSeconds = (int)(timeBeforeTicking / 1000);
         return properties.getGameProperties().getTickingTimes() * tickingTimeInSeconds;
     }
 
     private long timeLimitInMs() {
-        var tickingTimeInSeconds = (properties.getGameProperties().getTimingBeforeTicking());
-        return properties.getGameProperties().getTickingTimes() * tickingTimeInSeconds;
+        return properties.getGameProperties().getTickingTimes() * timeBeforeTicking;
+    }
+
+    public void setTimeBeforeTicking(long timeBeforeTicking) {
+        this.timeBeforeTicking = timeBeforeTicking;
+    }
+
+    public void setTickingTimes(int tickingTimes) {
+        this.tickingTimes = tickingTimes;
     }
 }

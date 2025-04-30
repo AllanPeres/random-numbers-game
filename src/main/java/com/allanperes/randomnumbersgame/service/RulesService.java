@@ -24,7 +24,7 @@ public class RulesService {
     }
 
     public BigDecimal calculateWinnings(BigDecimal bet) {
-        if (bet.compareTo(BigDecimal.ONE) < 1) {
+        if (bet.compareTo(BigDecimal.ONE) < 0) {
             throw new IllegalArgumentException("Bet must be greater than one");
         }
         return bet.multiply(STAKE_RATIO);

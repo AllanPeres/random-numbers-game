@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.allanperes.randomnumbersgame.handlers.GameWebSocketHandlerIntTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-04-30T11:42:31.301Z" hostname="JXYJ19WH2C" time="1.981">
+  <properties/>
+  <testcase name="when_ConnectedToWebSocketAndDoAWrongBet_should_ReceiveYouLostMessages(CapturedOutput)" classname="com.allanperes.randomnumbersgame.handlers.GameWebSocketHandlerIntTest" time="1.545"/>
+  <testcase name="when_ConnectingToWebsocked_should_ReceiveWelcomingMessage(CapturedOutput)" classname="com.allanperes.randomnumbersgame.handlers.GameWebSocketHandlerIntTest" time="0.009"/>
+  <testcase name="when_ConnectedToWebSocketAndDoACorrectBet_should_ReceiveYouWonMessages(CapturedOutput)" classname="com.allanperes.randomnumbersgame.handlers.GameWebSocketHandlerIntTest" time="0.426"/>
+  <system-out><![CDATA[
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.5)
+
+2025-04-30T14:42:30.643+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] c.a.r.h.GameWebSocketHandlerIntTest      : Starting GameWebSocketHandlerIntTest using Java 21.0.2 with PID 59649 (started by allan.peres in /Users/allan.peres/IdeaProjects/random-numbers-game)
+2025-04-30T14:42:30.644+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] c.a.r.h.GameWebSocketHandlerIntTest      : The following 1 profile is active: "integration"
+2025-04-30T14:42:30.995+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-04-30T14:42:31.001+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-04-30T14:42:31.002+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-04-30T14:42:31.043+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-04-30T14:42:31.045+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 394 ms
+2025-04-30T14:42:31.293+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-04-30T14:42:31.296+03:00  INFO 59649 --- [random-numbers-game] [    Test worker] c.a.r.h.GameWebSocketHandlerIntTest      : Started GameWebSocketHandlerIntTest in 0.779 seconds (process running for 1.218)
+2025-04-30T14:42:31.727+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-04-30T14:42:31.727+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-04-30T14:42:31.727+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2025-04-30T14:42:31.742+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-1] c.a.r.service.GameService                : Starting round
+2025-04-30T14:42:31.742+03:00  INFO 59649 --- [random-numbers-game] [cTaskExecutor-1] c.a.r.client.GameWebSockedClient         : established connection - StandardWebSocketSession[id=67913b82-6c73-2792-3782-749c333eb2d0, uri=null]
+2025-04-30T14:42:31.744+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-2] c.a.r.client.GameWebSockedClient         : received message - Game started! You have 10 seconds to give your guess!
+2025-04-30T14:42:31.744+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-2] c.a.r.client.GameWebSockedClient         : received message - You have joined the game! You are player-bc3cbffe-9456-4ea5-88a1-24bc169baa4d!
+2025-04-30T14:42:31.777+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-2] c.a.r.service.GameService                : User player-bc3cbffe-9456-4ea5-88a1-24bc169baa4d made a bet on GuessDto[guess=4, bet=1]
+2025-04-30T14:42:31.779+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-3] c.a.r.client.GameWebSockedClient         : received message - Your guess is 4 you bet 1
+2025-04-30T14:42:32.771+03:00  INFO 59649 --- [random-numbers-game] [onPool-worker-1] c.a.r.service.GameService                : Finishing round
+2025-04-30T14:42:32.774+03:00  INFO 59649 --- [random-numbers-game] [onPool-worker-1] c.a.randomnumbersgame.utils.GameData     : User player-bc3cbffe-9456-4ea5-88a1-24bc169baa4d Lost!
+2025-04-30T14:42:32.776+03:00  INFO 59649 --- [random-numbers-game] [onPool-worker-1] c.a.r.service.GameService                : Starting round
+2025-04-30T14:42:32.776+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-4] c.a.r.client.GameWebSockedClient         : received message - You lost, don't be sad try one more time!
+2025-04-30T14:42:32.776+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-4] c.a.r.client.GameWebSockedClient         : received message - No winners this round! Better luck next time.
+2025-04-30T14:42:32.777+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-4] c.a.r.client.GameWebSockedClient         : received message - Game started! You have 10 seconds to give your guess!
+2025-04-30T14:42:32.853+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-4] c.a.r.service.GameService                : Starting round
+2025-04-30T14:42:32.853+03:00  INFO 59649 --- [random-numbers-game] [cTaskExecutor-2] c.a.r.client.GameWebSockedClient         : established connection - StandardWebSocketSession[id=a79a3f15-8a99-4ee7-4ab3-d5608216f02e, uri=null]
+2025-04-30T14:42:32.854+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-13] c.a.r.client.GameWebSockedClient         : received message - Game started! You have 10 seconds to give your guess!
+2025-04-30T14:42:32.854+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-13] c.a.r.client.GameWebSockedClient         : received message - You have joined the game! You are player-dfab080a-b6fd-49c5-8b94-fc274eb69cf7!
+2025-04-30T14:42:32.855+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-5] c.a.r.service.GameService                : User player-dfab080a-b6fd-49c5-8b94-fc274eb69cf7 made a bet on GuessDto[guess=2, bet=1]
+2025-04-30T14:42:32.855+03:00  INFO 59649 --- [random-numbers-game] [lient-AsyncIO-8] c.a.r.client.GameWebSockedClient         : received message - Your guess is 2 you bet 1
+2025-04-30T14:42:32.860+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-6] c.a.r.service.GameService                : Starting round
+2025-04-30T14:42:32.860+03:00  INFO 59649 --- [random-numbers-game] [cTaskExecutor-3] c.a.r.client.GameWebSockedClient         : established connection - StandardWebSocketSession[id=bb11edf1-d4ef-3ec5-9d9b-9192f34d277c, uri=null]
+2025-04-30T14:42:32.861+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-13] c.a.r.client.GameWebSockedClient         : received message - Game started! You have 10 seconds to give your guess!
+2025-04-30T14:42:32.861+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-13] c.a.r.client.GameWebSockedClient         : received message - You have joined the game! You are player-94b63e62-6f41-4bf2-b409-47d959621a09!
+2025-04-30T14:42:32.862+03:00  INFO 59649 --- [random-numbers-game] [nio-8080-exec-7] c.a.r.service.GameService                : User player-94b63e62-6f41-4bf2-b409-47d959621a09 made a bet on GuessDto[guess=2, bet=3]
+2025-04-30T14:42:32.862+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-11] c.a.r.client.GameWebSockedClient         : received message - Your guess is 2 you bet 3
+2025-04-30T14:42:33.188+03:00  INFO 59649 --- [random-numbers-game] [onPool-worker-1] c.a.r.service.GameService                : Finishing round
+2025-04-30T14:42:33.191+03:00  INFO 59649 --- [random-numbers-game] [onPool-worker-1] c.a.randomnumbersgame.utils.GameData     : User player-94b63e62-6f41-4bf2-b409-47d959621a09 won!
+2025-04-30T14:42:33.193+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-12] c.a.r.client.GameWebSockedClient         : received message - You won 29.7
+2025-04-30T14:42:33.193+03:00  INFO 59649 --- [random-numbers-game] [onPool-worker-1] c.a.r.service.GameService                : Starting round
+2025-04-30T14:42:33.194+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-13] c.a.r.client.GameWebSockedClient         : received message - The winners are User: player-94b63e62-6f41-4bf2-b409-47d959621a09 Won: 29.7
+2025-04-30T14:42:33.194+03:00  INFO 59649 --- [random-numbers-game] [ient-AsyncIO-13] c.a.r.client.GameWebSockedClient         : received message - Game started! You have 10 seconds to give your guess!
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/allan.peres/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.15.11/a38b16385e867f59a641330f0362ebe742788ed8/byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

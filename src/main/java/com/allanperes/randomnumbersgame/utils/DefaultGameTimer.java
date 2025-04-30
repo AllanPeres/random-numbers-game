@@ -39,6 +39,16 @@ public class DefaultGameTimer implements GameTimer {
         increaseTime(properties.getGameProperties().getTimingBeforeTicking());
     }
 
+    @Override
+    public int getTicklingTimes() {
+        return properties.getGameProperties().getTickingTimes();
+    }
+
+    @Override
+    public long getTimeBeforeTicking() {
+        return properties.getGameProperties().getTimingBeforeTicking();
+    }
+
     private int timePassedInSeconds() {
         return Math.round((float) msPassed.get() / 1000);
     }

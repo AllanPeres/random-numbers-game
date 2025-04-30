@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: random-numbers-game
+
+com:
+  allanperes:
+    randomnumbersgame:
+      game-properties:
+        ticking-times: 10 #How many times will tick the clock before finishing the bets.
+        timing-before-ticking: 1000 #How much time wait before tick the clock in ms.

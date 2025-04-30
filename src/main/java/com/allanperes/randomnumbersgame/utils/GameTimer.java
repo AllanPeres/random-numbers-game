@@ -7,4 +7,6 @@ public interface GameTimer {
     void resetTimer();
     void increaseTime(long waitingTimeInMs);
     void increaseTime();
+    int getTicklingTimes();
+    long getTimeBeforeTicking();
 }

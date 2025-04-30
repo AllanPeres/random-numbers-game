@@ -1,6 +1,5 @@
 package com.allanperes.randomnumbersgame.service;
 
-import com.allanperes.randomnumbersgame.config.props.RandomNumbersGameProperties;
 import com.allanperes.randomnumbersgame.utils.GameData;
 import com.allanperes.randomnumbersgame.utils.GameState;
 import com.allanperes.randomnumbersgame.models.User;
@@ -10,6 +9,7 @@ import com.allanperes.randomnumbersgame.utils.GameTimer;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,24 +21,26 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class GameService {
 
-    private final ConcurrentHashMap<String, User> users = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, WebSocketSession> webSocketSessions = new ConcurrentHashMap<>();
 
     private final RulesService rulesService;
     private final GameTimer gameTimer;
-    private final RandomNumbersGameProperties properties;
+    private final GameData gameData;
 
     private final GameState gameState = new GameState();
-    private final GameData gameData = new GameData();
 
     public void addUser(User user, WebSocketSession session) {
-        users.put(user.username(), user);
+        gameData.addPlayer(user);
         webSocketSessions.put(user.username(), session);
     }
 
     public void removeUser(User user) {
-        users.remove(user.username());
+        gameData.removePlayer(user);
         webSocketSessions.remove(user.username());
+        if (webSocketSessions.isEmpty()) {
+            gameState.stopRound();
+            gameData.reset();
+        }
     }
 
     public String getUserName() {
@@ -71,7 +73,7 @@ public class GameService {
     }
 
     private void runRound() {
-        final var waitingTime = properties.getGameProperties().getTimingBeforeTicking();
+        final var waitingTime = gameTimer.getTimeBeforeTicking();
         while(gameState.isRoundRunning() && !gameTimer.isFinished()) {
             try {
                 Thread.sleep(waitingTime);
@@ -113,22 +115,46 @@ public class GameService {
     }
 
     private void notifyUsers() {
+        notifyAllWinnersTheirWinnings();
+        notifyAllLosers();
+        notifyAllUsersTheWinners();
+    }
+
+    private void notifyAllWinnersTheirWinnings() {
         for (WinningsDto winner : gameData.getWinners()) {
             final var session = webSocketSessions.get(winner.username());
             if (session != null) {
                 sendMessage(session, new TextMessage("You won " + winner.winnings()));
             }
         }
+    }
+
+    private void notifyAllLosers() {
         for (String username : gameData.getLosers()) {
             final var session = webSocketSessions.get(username);
             if (session != null) {
                 sendMessage(session, new TextMessage("You lost, don't be sad try one more time!"));
             }
         }
+    }
+
+    private void notifyAllUsersTheWinners() {
+        final var winnersMessage = getWinnersMessage();
         for (WebSocketSession session : webSocketSessions.values()) {
-            final var winnerText = new TextMessage("The winners are " + gameData.getWinners());
+            final var winnerText = new TextMessage(winnersMessage);
             sendMessage(session, winnerText);
         }
+    }
+
+    private String getWinnersMessage() {
+        if (gameData.getWinners().isEmpty()) {
+            return "No winners this round! Better luck next time.";
+        }
+        final var winnersList = gameData.getWinners()
+                .stream()
+                .map(WinningsDto::getWinningsLog)
+                .collect(Collectors.joining(", "));
+        return "The winners are " + winnersList;
     }
 
     private void sendMessage(WebSocketSession session, TextMessage message) {
