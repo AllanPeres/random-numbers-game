@@ -3,7 +3,6 @@ package com.allanperes.randomnumbersgame.config;
 import com.allanperes.randomnumbersgame.config.props.RandomNumbersGameProperties;
 import com.allanperes.randomnumbersgame.testutils.TestGameTimer;
 import com.allanperes.randomnumbersgame.testutils.TestRandomProvider;
-import com.allanperes.randomnumbersgame.utils.GameData;
 import com.allanperes.randomnumbersgame.utils.GameTimer;
 import com.allanperes.randomnumbersgame.utils.RandomProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
